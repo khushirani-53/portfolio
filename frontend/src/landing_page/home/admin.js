@@ -1,6 +1,9 @@
 
 import React, { useState } from "react";
 
+const API_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:3003";
+
 function Admin() {
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
@@ -14,9 +17,11 @@ function Admin() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3003/api/admin/login", {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ password }),
       });
 
@@ -26,11 +31,17 @@ function Admin() {
         throw new Error(data.message || "Login failed.");
       }
 
+      if (!data.token) {
+        throw new Error("Login succeeded, but no token was returned.");
+      }
+
       setToken(data.token);
       setPassword("");
       await loadMessages(data.token);
     } catch (err) {
-      setError(err.message || "Unable to connect to the backend.");
+      setError(
+        err.message || "Unable to connect to the backend."
+      );
     } finally {
       setLoading(false);
     }
@@ -41,12 +52,11 @@ function Admin() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:3003/api/admin/contacts",
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
-      );
+      const response = await fetch(`${API_URL}/api/admin/contacts`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
       const data = await response.json();
 
@@ -56,7 +66,9 @@ function Admin() {
 
       setMessages(data);
     } catch (err) {
-      setError(err.message || "Unable to load messages.");
+      setError(
+        err.message || "Unable to load messages."
+      );
     } finally {
       setLoading(false);
     }
