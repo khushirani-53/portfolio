@@ -6,12 +6,14 @@ phases:
     runtime-versions:
       nodejs: 20
     commands:
+      - cd backend
       - npm install
+
   build:
     commands:
-      - echo "Backend dependencies installed"
+      - echo "Backend dependencies installed successfully"
 
 artifacts:
   files:
     - '**/*'
-  discard-paths: no
+  base-directory: backend
